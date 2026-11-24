@@ -1,0 +1,77 @@
+# Parametría de negocio — Especificación Funcional V2.0 (Plan Familia VAVI Ramo 2500)
+
+pais_origen: 1
+grupo_estadistico: 2301
+
+opcion_cobertura_por_plan:
+  "4": 18484
+  "5": 28275
+  "6": 33403
+  "100": 56128
+
+# Equivalencias tarjeta de crédito (Anexo B)
+tarjetas:
+  Cabal: 1
+  Visa: 5
+  "Visa Argent.": 5
+  Favacard: 7
+  "American Express": 9
+  "Ame. Express": 9
+  Naranja: 12
+  "Naranja Visa": 18
+  "Nar Visa": 18
+  "Cordobesa - MasterCard": 20
+  Cordobesa: 20
+  "TDF - Tierra del Fuego": 23
+  TDF: 23
+  "Débitos OCA": 30
+  Creditel: 33
+  "Galicia Rural": 36
+  "Gal. Rural": 36
+  "MasterCard Nueva": 45
+  "Master.Nva.": 45
+  "MasterCard SANCOR SEGUROS SF": 47
+  MasterNBSF: 47
+  "MasterCard SANCOR SEGUROS ER": 48
+  MasterBERSA: 48
+  ELEBAR: 57
+  "CLUB DEL ESTE": 68
+  "Club Este": 68
+  "Cencosud MasterCard": 70
+  "Cen.Mas.": 70
+  Tuya: 74
+  Confiable: 75
+
+# Lectura de plan/módulo por variante de PDF (configurable sin tocar código)
+formularios:
+  modulo_excel:
+    A: 1
+    B: 2
+
+  variantes:
+    plan4:
+      marcas_encabezado:
+        - "PLAN FAMILIA"
+        - "PLAN 4"
+      plan_default: "4"
+      modulo:
+        campos_a: ["APORTE", "DOCM"]
+        campos_b: ["APORTE1", "DOCM1"]
+        usar_posicion_xy: true
+
+    asesores:
+      marcas_encabezado:
+        - "ASESORES"
+      plan:
+        campo: "TIPO PLAN"
+        por_export:
+          "On": "5"
+          "On1": "6"
+          "On2": "100"
+        por_orden_y: ["5", "6", "100"]
+      modulo:
+        campo: "COBERTURA"
+        por_export:
+          "On": A
+          "On1": B
+        por_orden_y: [A, B]

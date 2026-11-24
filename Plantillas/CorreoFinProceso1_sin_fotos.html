@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación RPA</title>
+</head>
+<body style="background-color: #E8E8E4; margin: 0; padding: 20px; font-family: 'Tahoma', sans-serif;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <tr>
+            <td align="center" style="background-color: #8796A3; padding: 20px;">
+                <h1 style="color: #ffffff; font-size: 22px; font-weight: normal; margin: 0;">{{ nombre_proceso }}</h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px 30px 10px 30px;">
+                <h3 style="color: #333333; font-size: 18px; margin: 0 0 10px 0; font-weight: normal;">Estimados.</h3>
+                <p style="color: #666666; font-size: 14px; margin: 0 0 20px 0;">
+                    El proceso {{ nombre_proceso }} finalizó su ejecución a las {{ HORA_FIN }} del día {{ FECHA_FIN }}.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px 30px;">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="left" style="color: #666666; font-size: 14px;">
+                            <strong>Robot</strong>, from Sancor Seguros RPA Team.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding: 20px; border-top: 1px solid #CCCCCC;">
+                <p style="color: #989898; font-size: 14px; margin: 0 0 10px 0;">Este correo es enviado por un robot.</p>
+                <p style="color: #989898; font-size: 12px; margin: 0;">Estás recibiendo este email porque te encuentras registrado en la lista de destinatarios del robot. Asegúrate de que nuestros mensajes lleguen a tu Bandeja de Entrada.</p>
+            </td>
+        </tr>
+    </table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin-top: 20px;">
+        <tr>
+            <td align="center">
+                <p style="color: #336600; font-size: 12px; margin: 0 0 15px 0;">
+                    Imprima este mensaje <strong>sólo si es absolutamente necesario</strong>.<br>
+                    Para imprimir, en lo posible utilice el papel de ambos lados.<br>
+                    El Grupo Sancor Seguros se compromete con el cuidado del medioambiente.
+                </p>
+                <p style="color: gray; font-size: 10px; text-align: justify; margin: 0;">
+                    ************AVISO DE CONFIDENCIALIDAD************<br><br>
+                    El Grupo Sancor Seguros comunica que:<br>
+                    Este mensaje y todos los archivos adjuntos a él son para uso exclusivo del destinatario y pueden contener información confidencial o propietaria, cuya divulgación es sancionada por ley. Si usted recibió este mensaje erróneamente, por favor notifíquenos respondiendo al remitente, borre el mensaje original y destruya las copias (impresas o grabadas en cualquier medio magnético) que pueda haber realizado del mismo. Todas las opiniones contenidas en este mail son propias del autor del mensaje. La publicación, uso, copia o impresión total o parcial de este mensaje o documentos adjuntos queda prohibida.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
