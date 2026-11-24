@@ -463,6 +463,39 @@ El lote **sigue** aunque haya E1 o incompletos: completas e incompletas van al E
 
 ## Flujo resumido
 
+```mermaid
+flowchart TD
+    A["1 · Entrada<br/>PDFs del mes de todos los asesores<br/>(carpeta local o SharePoint)"]
+    A --> B{"¿Solicitud<br/>Plan Familia?"}
+    B -- No --> X1["Ignorados / Revisar"]
+    B -- Sí --> C{"¿PDF<br/>legible?"}
+    C -- No --> X2["Excluidos (E1)"]
+    C -- Sí --> D{"¿Duplicado?"}
+    D -- Sí --> H3["Hoja Duplicados"]
+    D -- No --> E{"¿Completa?"}
+    E -- Sí --> H1["Hoja ExcelModelo"]
+    E -- No --> H2["Hoja Incompletos"]
+
+    subgraph EMI ["2 · emision_MM_YYYY.xlsx"]
+        H1
+        H2
+        H3
+    end
+
+    subgraph REP ["3 · reporte_MM_YYYY.xlsx (solo informa)"]
+        X1
+        X2
+    end
+```
+
+1. **Entrada:** el bot toma la carpeta `NNN VTAS MES AA` de cada asesor, ya sea local o descargada de SharePoint.
+2. **Excel de emisión:** cada solicitud leída termina en una de sus tres hojas. Es *duplicado* cuando hay dos PDF del mismo mes, asesor y DNI; *completa*, cuando tiene todos los datos obligatorios. Solo `ExcelModelo` se carga en el Centro Emisor.
+3. **Reporte:** resume la corrida completa y lista lo que no entró al Excel (adjuntos, escaneos, PDF ilegibles).
+
+Los dos archivos se guardan en `output/` o, si corre con Graph, en `_salida/` de SharePoint.
+
+Detalle técnico:
+
 ```
 Repo local o Graph (staging) + mes/año
         → Snapshot inmutable del lote
