@@ -14,8 +14,7 @@ Destino:
     (misma estructura, solo PDFs con campos de formulario útiles para N1)
 
 Uso (desde la raíz del repo):
-  v2_emisiones-plan-familia-VAVI\\.venv\\Scripts\\python.exe ^
-    v2_emisiones-plan-familia-VAVI\\scripts\\filtrar_editables_sharepoint.py
+  .\\.venv\\Scripts\\python.exe scripts\\filtrar_editables_sharepoint.py
 
   # Dry-run (no copia):
   ... filtrar_editables_sharepoint.py --dry-run

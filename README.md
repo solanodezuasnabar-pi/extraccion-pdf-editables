@@ -5,7 +5,7 @@ Bot RPA local que toma **solicitudes PDF editables** (Plan Familia / Ramo 2500) 
 1. **Excel de Emisión** (modelo Centro Emisor, Anexo 3.3)
 2. **Reporte** de la corrida (completas / incompletas / excluidos E1 / ignorados + checklist de columnas)
 
-Arquitectura alineada al template RPA interno (`--env`, `configs/`, `process_manager`, libs). Sin Selenium. Un Excel y un reporte **por mes** (no por asesor). Graph baja el mes de la biblioteca de SharePoint y publica en `_salida/` si `GRAPH_ENABLED=true` y no hay `--repo`/`--input`. Los mails son aviso (plantillas HTML); se **guardan en disco** (`MAIL_SAVE_LOCAL`). `NOTIFY_ENABLED` manda SMTP: en el smoke TST del share va `false` (SMTP lo está viendo IT). En `.tst.env` del repo puede figurar `true` — no asumas el README.
+Arquitectura alineada al template RPA interno (`--env`, `configs/`, `process_manager`, libs). Sin Selenium. Un Excel y un reporte **por mes** (no por asesor). Graph baja el mes de la biblioteca de SharePoint y publica en `_salida/` si `GRAPH_ENABLED=true` y no hay `--repo`/`--input`. Los mails son aviso (plantillas HTML); se **guardan en disco** (`MAIL_SAVE_LOCAL`) y se envían por SMTP solo si `NOTIFY_ENABLED=true`.
 
 
 |                      |                                                                        |
@@ -22,6 +22,7 @@ Arquitectura alineada al template RPA interno (`--env`, `configs/`, `process_man
 - [Requisitos](#requisitos)
 - [Estructura de entrada](#estructura-de-entrada)
 - [Instalación (desarrollo)](#instalación-desarrollo)
+  - [Tests](#tests)
 - [Uso con Python](#uso-con-python)
   - [Parámetros CLI](#parámetros-cli)
 - [Uso con .exe](#uso-con-exe)
@@ -83,7 +84,7 @@ Sin `--mes`/`--anio`, usa el **mes en curso por calendario** (corrida típica d�
 
 **Formato canónico de carpeta mensual:** `NNN VTAS MES AA` (ej. `002 VTAS FEBRERO 26`). Variantes como `VTAS FEBRERO 2026` o `07 julio 25` se ignoran para procesar y aparecen como aviso en log/reporte.
 
-En el clone, `run.bat` igual usa el set de prueba si existe junto al bat (eso apaga Graph). En TST/PRO, sin esa carpeta y sin `--repo`, corre Graph. Si `GRAPH_CERT_PATH` está vacío, el `.exe` pide el token al **store de Windows** (`scripts/graph_token_windows.ps1` embebido). Si hay PEM, usá esa ruta.
+Si la carpeta `SOLICITUDES SALUD VAVI-RETIRO` existe junto a `run.bat` y `GRAPH_ENABLED` no es `true`, `run.bat` la usa como entrada local (eso apaga Graph). En TST/PRO, sin esa carpeta y sin `--repo`, corre Graph. Si `GRAPH_CERT_PATH` está vacío, el `.exe` pide el token al **store de Windows** (`scripts/graph_token_windows.ps1` embebido). Si hay PEM, usá esa ruta.
 
 Para un corpus completo local (fuera del git) pasalo con `--repo` o `EMISION_REPO`. `--repo` / `--input` **apagan Graph**.
 
@@ -104,6 +105,14 @@ Los archivos `configs/.dev.env`, `.tst.env` y `.pro.env` **no se versionan**. Se
 
 `main.py` reutiliza el `.venv` local automáticamente si existe.
 
+### Tests
+
+```powershell
+.venv\Scripts\python.exe -m unittest discover -s tests
+```
+
+Usan PDFs y carpetas sintéticas que se crean en temporales; no necesitan `.env` ni acceso a SharePoint. Los dos tests de regresión de `test_formularios_parametria.py` se saltean si no hay PDFs reales en `output/editables_02_2026`.
+
 ---
 
 
@@ -116,7 +125,7 @@ cd extraccion-pdf-editables
 # Mes en curso por calendario (INPUTS del .env; Graph si GRAPH_ENABLED=true)
 python main.py --env dev
 
-# Set de prueba local (apaga Graph)
+# Carpeta de entrada local (apaga Graph)
 python main.py --env pro --repo ".\SOLICITUDES SALUD VAVI-RETIRO"
 
 # Mes / año explícitos
@@ -157,7 +166,7 @@ Forma recomendada: `run.bat` desde la raíz del proyecto (no hace falta entrar a
 ```powershell
 cd extraccion-pdf-editables
 
-# Mes en curso por calendario (set de prueba local si existe junto al bat)
+# Mes en curso por calendario (carpeta de entrada local si existe junto al bat)
 .\run.bat
 
 # Mes / año explícitos (smoke típico)
@@ -167,7 +176,7 @@ cd extraccion-pdf-editables
 .\run.bat --env tst --mes 2 --anio 2026
 
 # Graph: sin --repo. En el clone, además setear GRAPH_ENABLED=true
-# para que run.bat no inyecte el set de prueba.
+# para que run.bat no use la carpeta de entrada local.
 $env:GRAPH_ENABLED = "true"
 .\run.bat --env tst --mes 2 --anio 2026
 ```
@@ -181,7 +190,7 @@ Qué hace `run.bat`:
 5. Reenvía el resto (`--mes`, `--anio`, `--sin-filtro`, `--repo` explícito, etc.)
 6. Termina con el código de salida del `.exe`
 
-`--repo` / `--input` fuerzan modo local y **apagan Graph**. En TST/PRO, si no copiás el set de prueba junto al bat, `run.bat` no inyecta `--repo`: Graph corre si `GRAPH_ENABLED=true` en el `.env`.
+`--repo` / `--input` fuerzan modo local y **apagan Graph**. En TST/PRO, si no hay carpeta de entrada local junto al bat, `run.bat` no inyecta `--repo`: Graph corre si `GRAPH_ENABLED=true` en el `.env`.
 
 Por qué no hay un `.exe` suelto en la raíz: el build es **onedir** (carpeta). El ejecutable necesita `_internal\` al lado con las DLLs; solo el `.exe` no alcanza. `run.bat` evita esa fricción. El `.exe` **no se versiona** (está en `.gitignore`); cada máquina lo genera.
 
@@ -202,7 +211,7 @@ Después de cambiar código, regenerá el `.exe` y seguí usando `.\run.bat` igu
 Smoke mínimo post-build:
 
 ```powershell
-.\run.bat --mes 2 --anio 2026    # mes explícito (set de prueba)
+.\run.bat --mes 1 --anio 2026    # mes explícito (con PDFs en la carpeta de entrada)
 .\run.bat                        # mes en curso por calendario
 ```
 
@@ -233,7 +242,7 @@ Hay que copiar **toda** la carpeta `EmisionPlanFamiliaVAVI` (el `.exe` y `_inter
 
 Usá el mismo programa que ya se probó en TST. No generes un `.exe` nuevo el día 26.
 
-No pongas la carpeta de prueba `SOLICITUDES SALUD VAVI-RETIRO` al lado de `run.bat`. Si está, el bot no usa SharePoint.
+No pongas la carpeta de entrada local `SOLICITUDES SALUD VAVI-RETIRO` al lado de `run.bat`. Si está, el bot no usa SharePoint.
 
 **Ejecución desde la carpeta de red**
 
@@ -345,7 +354,7 @@ Variables relevantes:
 | `LOGS`                            | Carpeta de `process.log`                                                         |
 | `TEMPLATES`                       | Carpeta del template Excel CE (`Modelo salud CE.xlsx`)                           |
 | `MAIL_TEMPLATES`                  | Carpeta `Plantillas/` (HTML de inicio, fin OK y error)                           |
-| `NOTIFY_ENABLED`                  | Envío SMTP. En el share TST del smoke: `false`. No asumir que git/tst coinciden. |
+| `NOTIFY_ENABLED`                  | `true` = envía los avisos por SMTP. `false` = solo los guarda en disco.          |
 | `MAIL_SAVE_LOCAL`                 | Guarda HTML renderizado en `output/correos/<timestamp>/`                         |
 | `GRAPH_ENABLED`                   | `true` = baja el mes de SharePoint y publica emisión + reporte en `GRAPH_SALIDA`. |
 | `GRAPH_CERT_PATH`                 | PEM del certificado. **Vacío** = store de Windows (`.exe` y scripts de probe).   |
@@ -550,7 +559,7 @@ El job Control-M no pasa `--mes`/`--anio`. Tratar **exit 0 = el proceso corrió*
 | `getaddrinfo failed` / error 11003 (no resuelve DNS)        | Se ejecutó el `.exe` directo desde la carpeta de red. Usá `run.bat`, que lo copia a disco local y lo corre desde ahí.                                                                                   |
 | `no se pudo copiar el programa` / `ya existe y no es una copia de este programa` (mensajes de `run.bat`) | La cuenta no puede escribir en la carpeta local, o esa carpeta tiene otra cosa. Definí `EMISION_LOCAL_DIR` con una carpeta local donde la cuenta pueda escribir. |
 | `No se encontro el .exe` (mensaje de `run.bat`)             | Generarlo: `.venv\Scripts\python.exe -m PyInstaller --clean -y main.spec`                                                                                                                               |
-| `No existe el repo indicado (--repo)`                       | Ruta inválida. En el clone, `run.bat` usa el set de prueba si existe.                                                                                                                                   |
+| `No existe el repo indicado (--repo)`                       | Ruta inválida. Sin `--repo`, `run.bat` usa la carpeta de entrada local si existe.                                                                                                                                   |
 | Graph no corre / no baja de SharePoint                      | Sacá `--repo`/`--input`. `GRAPH_ENABLED=true`. `GRAPH_CERT_PATH` vacío usa el store de Windows; si hay PEM, esa ruta. En el clone, `set GRAPH_ENABLED=true` para que `run.bat` no inyecte el set local. |
 | Token store Windows no responde (timeout 60s)               | El `.ps1` del certificado se colgó. Revisá el cert en el store de la cuenta del job, o usá PEM en `GRAPH_CERT_PATH`. Control-M debe ver exit 1, no un job eterno. |
 | El mail no llega                                            | El destinatario tiene que ser del dominio corporativo que acepta el relay (`PROCESS_SUCCESS_EMAILS` / `PROCESS_ERROR_EMAILS`). |

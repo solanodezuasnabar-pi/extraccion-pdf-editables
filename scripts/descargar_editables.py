@@ -4,7 +4,7 @@ Usa Graph (misma biblioteca que el RPA) y el mismo selector que `process_manager
 solo `solicitud_editable` (Plan Familia). Incluye incompletos; excluye escaneos,
 adjuntos (DNI/CBU) y otros formularios.
 
-Uso (desde ssa-emisionesvavi-remote):
+Uso (desde la raíz del repo):
   .\\.venv\\Scripts\\python.exe scripts\\descargar_editables.py
   .\\.venv\\Scripts\\python.exe scripts\\descargar_editables.py --mes 2 --anio 2026
   .\\.venv\\Scripts\\python.exe scripts\\descargar_editables.py --dest D:\\vavi\\feb

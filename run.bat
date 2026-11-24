@@ -88,7 +88,7 @@ echo(%*| findstr /i /c:"--env" >nul
 if not errorlevel 1 set "PASS_ENV=0"
 
 REM --repo apaga Graph. No se agrega si GRAPH_ENABLED=true o si ya viene --repo.
-REM EMISION_REPO o el set de prueba junto a este bat: smoke local.
+REM EMISION_REPO o la carpeta de entrada local junto a este bat: corrida local.
 set "REPO="
 if /i "%GRAPH_ENABLED%"=="true" goto :run
 if defined EMISION_REPO (
